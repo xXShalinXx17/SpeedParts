@@ -34,7 +34,4 @@ horario_de_salida time not null,
 fecha_de_vacaciones date not null
 );
 
-create table recibo(
-ID_recibo bigint not null auto_increment primary key
-);
  
