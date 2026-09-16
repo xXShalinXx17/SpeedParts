@@ -55,7 +55,6 @@ CREATE TABLE Horario (
     CONSTRAINT fk_horario_usuario FOREIGN KEY (ID_usuario) REFERENCES Usuario(ID_usuario) ON DELETE CASCADE
 );
 
--- 2. Cambiar el delimitador JUSTO ANTES de empezar el Trigger
 DELIMITER //
 
 CREATE TRIGGER check_rol_antes_de_horario
