@@ -12,22 +12,52 @@ INSERT INTO Rol (ID_rol, Roles) VALUES
 (2, 'Empleado'),
 (3, 'Cliente');
 
-create table Usuario (
+CREATE TABLE Usuario (
 ID_usuario bigint not null auto_increment primary key,
 ID_rol int not null,
-Nombre text(100),
-Apellido text(100),
+Nombre text not null,
+Apellido text not null,
 telefono int(20) not null,
 DNI int(8) not null,
-Dirección text(150) not null,
-Gmail text(500) not null,
-contraseña text(500) not null,
+Dirección text not null,
+Gmail text not null,
+contraseña text not null,
 CONSTRAINT fk_usuario_rol FOREIGN KEY (ID_rol) REFERENCES Rol(ID_rol)
 );
+
+DELIMITER //
+CREATE TRIGGER validar_datos_usuario_nuevo
+BEFORE INSERT ON Usuario
+FOR EACH ROW
+BEGIN
+    IF NEW.Gmail NOT LIKE '%@%' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error de validacion: El correo electronico ingresado no tiene un formato valido.';
+    END IF;
+
+    IF NEW.DNI <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error de validacion: El numero de DNI debe ser mayor a cero.';
+    END IF;
+END //
+DELIMITER ;
+
 INSERT INTO Usuario (ID_usuario, ID_rol, Nombre, Apellido, telefono, DNI, Dirección, Gmail, contraseña) VALUES
 (1, 1, 'Carlos', 'Gómez', 1145678901, 30123456, 'Av. Santa Fe 1234, CABA', 'carlos.gomez@email.com', '$2b$10$hashAdminSecret123'),
 (2, 2, 'Ana', 'Martínez', 1156789012, 35789123, 'Calle Florida 550, CABA', 'ana.martinez@email.com', '$2b$10$hashEmpleadoWork456'),
 (3, 2, 'Julian', 'Rodriguez',1195315775, 49172856, 'Av. Cordoba 2134, CABA', 'julian.rodriguez@gmail.com', '$2b$10$hashClientePass789');
+
+DELIMITER //
+CREATE TRIGGER auditar_cambios_seguridad
+AFTER UPDATE ON Usuario
+FOR EACH ROW
+BEGIN
+    IF OLD.Gmail <> NEW.Gmail OR OLD.contraseña <> NEW.contraseña THEN
+        INSERT INTO registro (ID_usuario, ip_direccion, dispositivo, estado_conexion)
+        VALUES (NEW.ID_usuario, '127.0.0.1', 'Sistema / Seguridad', 'Credenciales Modificadas');
+    END IF;
+END //
+DELIMITER ;
 
 CREATE TABLE registro (
     ID_registro BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -38,6 +68,28 @@ CREATE TABLE registro (
     estado_conexion VARCHAR(20) DEFAULT 'Exitoso',      
     CONSTRAINT fk_registro_usuario FOREIGN KEY (ID_usuario) REFERENCES Usuario(ID_usuario) ON DELETE CASCADE
 );
+
+DELIMITER //
+CREATE TRIGGER bloquear_modificacion_auditoria
+BEFORE UPDATE ON registro
+FOR EACH ROW
+BEGIN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Error de Seguridad: Los registros de auditoria son de solo lectura y no se pueden modificar.';
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER bloquear_borrado_auditoria
+BEFORE DELETE ON registro
+FOR EACH ROW
+BEGIN
+    IF (SELECT COUNT(*) FROM Usuario WHERE ID_usuario = OLD.ID_usuario) > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error de Seguridad: No esta permitido borrar registros de auditoria de forma manual.';
+    END IF;
+END //
+DELIMITER ;
 
 INSERT INTO registro (ID_usuario, ip_direccion, dispositivo, estado_conexion) VALUES
 (1, '192.168.1.50', 'Chrome OS / PC Oficina Central', 'Exitoso'),
@@ -74,6 +126,24 @@ BEGIN
 END // 
 
 DELIMITER ; 
+
+DELIMITER //
+CREATE TRIGGER validar_coherencia_horas
+BEFORE INSERT ON Horario
+FOR EACH ROW
+BEGIN
+    IF NEW.horario_de_salida <= NEW.horario_de_entrada THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error de Recursos Humanos: El horario de salida no puede ser menor o igual al de entrada.';
+    END IF;
+    
+    IF NEW.fecha_de_vacaciones < CURDATE() THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error de Recursos Humanos: La fecha de vacaciones no puede ser un dia del pasado.';
+    END IF;
+END //
+DELIMITER ;
+
 INSERT INTO Horario (ID_usuario, Turno, horario_de_entrada, horario_de_salida, fecha_de_vacaciones) 
 VALUES (2, 'Turno Mañana Logística', '06:00:00', '14:00:00', '2027-02-10'),
        (1, 'turno tarde ADMIN', '06:00:00', '14:00:00','2026-12-24');
@@ -88,6 +158,23 @@ CREATE TABLE recibo (
     precio BIGINT NOT NULL,
     CONSTRAINT fk_recibo_usuario FOREIGN KEY (ID_usuario) REFERENCES Usuario(ID_usuario)
 );
+
+DELIMITER //
+CREATE TRIGGER validar_cantidades_recibo
+BEFORE INSERT ON recibo
+FOR EACH ROW
+BEGIN
+    IF NEW.cantidad <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error de Facturacion: La cantidad del producto vendido debe ser mayor a cero.';
+    END IF;
+    
+    IF NEW.precio <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error de Facturacion: El precio unitario del producto debe ser mayor a cero.';
+    END IF;
+END //
+DELIMITER ;
 
 INSERT INTO recibo (ID_usuario, id_repuestos, detalle_producto, fecha_entrega, cantidad, precio) VALUES
 (3, 101, 'Pastillas de Freno Brembo - Venta Mostrador', '2026-08-20', 2, 45000),
