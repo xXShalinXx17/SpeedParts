@@ -30,7 +30,7 @@ CREATE TRIGGER validar_datos_usuario_nuevo
 BEFORE INSERT ON Usuario
 FOR EACH ROW
 BEGIN
-    IF NEW.Gmail NOT LIKE '%@%' THEN
+    IF NEW.Gmail NOT LIKE '%@email.com%' THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Error de validacion: El correo electronico ingresado no tiene un formato valido.';
     END IF;
