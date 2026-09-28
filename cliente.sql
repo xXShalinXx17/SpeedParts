@@ -12,6 +12,19 @@ INSERT INTO Rol (ID_rol, Roles) VALUES
 (2, 'Empleado'),
 (3, 'Cliente');
 
+CREATE TABLE Sub_Rol_Empleado (
+    ID_sub_rol INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    Nombre_puesto TEXT NOT NULL
+);
+
+INSERT INTO Sub_Rol_Empleado (ID_sub_rol, Nombre_puesto) VALUES 
+(1, 'Recursos Humanos'),
+(2, 'Limpieza y Maestranza'),
+(3, 'Ventas / Mostrador'),
+(4, 'Administración y Finanzas'),
+(5, 'Logística y Almacén');
+
+
 CREATE TABLE Usuario (
 ID_usuario bigint not null auto_increment primary key,
 ID_rol int not null,
@@ -30,7 +43,7 @@ CREATE TRIGGER validar_datos_usuario_nuevo
 BEFORE INSERT ON Usuario
 FOR EACH ROW
 BEGIN
-    IF NEW.Gmail NOT LIKE '%@email.com%' THEN
+    IF NEW.Gmail NOT LIKE '%@gmail.com%' THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Error de validacion: El correo electronico ingresado no tiene un formato valido.';
     END IF;
@@ -43,8 +56,8 @@ END //
 DELIMITER ;
 
 INSERT INTO Usuario (ID_usuario, ID_rol, Nombre, Apellido, telefono, DNI, Dirección, Gmail, contraseña) VALUES
-(1, 1, 'Carlos', 'Gómez', 1145678901, 30123456, 'Av. Santa Fe 1234, CABA', 'carlos.gomez@email.com', '$2b$10$hashAdminSecret123'),
-(2, 2, 'Ana', 'Martínez', 1156789012, 35789123, 'Calle Florida 550, CABA', 'ana.martinez@email.com', '$2b$10$hashEmpleadoWork456'),
+(1, 1, 'Carlos', 'Gómez', 1145678901, 30123456, 'Av. Santa Fe 1234, CABA', 'carlos.gomez@gmail.com', '$2b$10$hashAdminSecret123'),
+(2, 2, 'Ana', 'Martínez', 1156789012, 35789123, 'Calle Florida 550, CABA', 'ana.martinez@gmail.com', '$2b$10$hashEmpleadoWork456'),
 (3, 2, 'Julian', 'Rodriguez',1195315775, 49172856, 'Av. Cordoba 2134, CABA', 'julian.rodriguez@gmail.com', '$2b$10$hashClientePass789');
 
 DELIMITER //
@@ -55,6 +68,28 @@ BEGIN
     IF OLD.Gmail <> NEW.Gmail OR OLD.contraseña <> NEW.contraseña THEN
         INSERT INTO registro (ID_usuario, ip_direccion, dispositivo, estado_conexion)
         VALUES (NEW.ID_usuario, '127.0.0.1', 'Sistema / Seguridad', 'Credenciales Modificadas');
+    END IF;
+END //
+DELIMITER ;
+
+CREATE TABLE Detalle_Empleado (
+    ID_detalle BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    ID_usuario BIGINT NOT NULL UNIQUE,
+    ID_sub_rol INT NOT NULL,
+    fecha_contratacion DATE DEFAULT (CURRENT_DATE),
+    CONSTRAINT fk_detalle_usuario FOREIGN KEY (ID_usuario) REFERENCES Usuario(ID_usuario) ON DELETE CASCADE,
+    CONSTRAINT fk_detalle_sub_rol FOREIGN KEY (ID_sub_rol) REFERENCES Sub_Rol_Empleado(ID_sub_rol)
+);
+
+DELIMITER //
+CREATE TRIGGER validar_puesto_solo_empleados
+BEFORE INSERT ON Detalle_Empleado
+FOR EACH ROW
+BEGIN
+    DECLARE v_id_rol INT;
+    SELECT ID_rol INTO v_id_rol FROM Usuario WHERE ID_usuario = NEW.ID_usuario;
+    IF v_id_rol = 3 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: No se puede asignar un puesto interno a un Cliente.';
     END IF;
 END //
 DELIMITER ;
@@ -99,33 +134,13 @@ INSERT INTO registro (ID_usuario, ip_direccion, dispositivo, estado_conexion) VA
 
 CREATE TABLE Horario (
     ID_horario INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    ID_usuario BIGINT NOT NULL UNIQUE,
-    Turno VARCHAR(40) NOT NULL,
+    ID_detalle BIGINT NOT NULL UNIQUE,
+    Turno TEXT NOT NULL,
     horario_de_entrada TIME NOT NULL,
     horario_de_salida TIME NOT NULL,
     fecha_de_vacaciones DATE NOT NULL,
-    CONSTRAINT fk_horario_usuario FOREIGN KEY (ID_usuario) REFERENCES Usuario(ID_usuario) ON DELETE CASCADE
+    CONSTRAINT fk_horario_detalle FOREIGN KEY (ID_detalle) REFERENCES Detalle_Empleado(ID_detalle) ON DELETE CASCADE
 );
-
-DELIMITER //
-
-CREATE TRIGGER check_rol_antes_de_horario
-BEFORE INSERT ON Horario
-FOR EACH ROW
-BEGIN
-    DECLARE v_id_rol INT;
-
-    SELECT ID_rol INTO v_id_rol 
-    FROM Usuario 
-    WHERE ID_usuario = NEW.ID_usuario;
-
-    IF v_id_rol = 3 THEN
-        SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'Error de negocio: No se le puede asignar un horario de trabajo a un Cliente.';
-    END IF;
-END // 
-
-DELIMITER ; 
 
 DELIMITER //
 CREATE TRIGGER validar_coherencia_horas
@@ -133,20 +148,18 @@ BEFORE INSERT ON Horario
 FOR EACH ROW
 BEGIN
     IF NEW.horario_de_salida <= NEW.horario_de_entrada THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Error de Recursos Humanos: El horario de salida no puede ser menor o igual al de entrada.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: La salida no puede ser menor o igual a la entrada.';
     END IF;
-    
     IF NEW.fecha_de_vacaciones < CURDATE() THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Error de Recursos Humanos: La fecha de vacaciones no puede ser un dia del pasado.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: La fecha de vacaciones no puede ser del pasado.';
     END IF;
 END //
+
 DELIMITER ;
 
-INSERT INTO Horario (ID_usuario, Turno, horario_de_entrada, horario_de_salida, fecha_de_vacaciones) 
-VALUES (2, 'Turno Mañana Logística', '06:00:00', '14:00:00', '2027-02-10'),
-       (1, 'turno tarde ADMIN', '06:00:00', '14:00:00','2026-12-24');
+INSERT INTO Horario (ID_detalle, Turno, horario_de_entrada, horario_de_salida, fecha_de_vacaciones) VALUES
+(1, 'Turno Completo Ejecutivo', '08:00:00', '17:00:00', '2027-01-15'),
+(2, 'Turno Mañana Logística', '06:00:00', '14:00:00', '2027-02-10');
 
 CREATE TABLE recibo (
     ID_recibo BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -155,7 +168,7 @@ CREATE TABLE recibo (
     detalle_producto TEXT,        
     fecha_entrega DATE NOT NULL,
     cantidad INT NOT NULL,
-    precio BIGINT NOT NULL,
+    precio BIGINT NOT NULL,       
     CONSTRAINT fk_recibo_usuario FOREIGN KEY (ID_usuario) REFERENCES Usuario(ID_usuario)
 );
 
@@ -178,5 +191,4 @@ DELIMITER ;
 
 INSERT INTO recibo (ID_usuario, id_repuestos, detalle_producto, fecha_entrega, cantidad, precio) VALUES
 (3, 101, 'Pastillas de Freno Brembo - Venta Mostrador', '2026-08-20', 2, 45000),
-(3, 102, 'Filtro de Aceite Bosch - Repuesto Filtración', '2026-08-25', 1, 12000),
-(2, 103, 'Bujias NGK Iridium - Pack x4', '2026-08-28', 1, 32000);
+(3, 102, 'Filtro de Aceite Bosch - Repuesto Filtración', '2026-08-25', 1, 12000);
