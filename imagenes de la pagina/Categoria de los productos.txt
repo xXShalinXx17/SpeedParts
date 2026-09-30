@@ -20,3 +20,110 @@ Barcos
 
 6.071.480.000 (presupuesto en pesos)
 
+
+⚙️ Accesorios del motor
+• Bomba de agua de Toyota Corolla
+• Correa de distribución de Volkswagen Gol Trend
+• Filtro de aceite de Fiat Cronos
+• Junta de tapa de cilindros de Renault Sandero
+• Radiador de agua de Peugeot 208
+• Turbocompresor de Ford Focus
+• Filtro de aire de Chevrolet Onix
+• Depósito de refrigerante de Citroën C3
+• Tensor de correa de Nissan March
+• Múltiple de admisión de Honda Civic
+• Termostato de Hyundai HB20
+• Bomba de combustible de Kia Rio
+• Intercooler de Mercedes-Benz C200
+• Cadena de distribución de BMW 320i
+• Enfriador de aceite de Audi A4
+• Tapa de válvulas de Jeep Compass
+• Correa única de accesorios de Chery QQ
+• Soporte de motor de Haval H2
+• Polea de cigüeñal de BAIC X35
+• Manguera de radiador de GWM Ora
+🕹️ Sistema de transmisión
+• Kit de embrague de Fiat Argo
+• Caja de cambios manual de Volkswagen Up!
+• Semieje derecho de Renault Logan
+• Crapodina hidráulica de Ford Ka
+• Homocinética de rueda de Chevrolet Prisma
+• Caja automática CVT de Toyota Yaris
+• Eje de transmisión de Nissan Versa
+• Selector de cambios de Peugeot 308
+• Cable de embrague de Citroën Berlingo Furgón
+• Convertidor de par de Honda Accord
+• Diferencial delantero de Hyundai Elantra
+• Volante bimasa de Kia Cerato
+• Caja automática de doble embrague de Audi A3
+• Cardán de transmisión de BMW 118i
+• Caja secuencial de Mercedes-Benz A200
+• Caja de transferencia de Jeep Renegade
+• Semieje izquierdo de Chery Tiggo 2
+• Maza de rueda trasera de Haval H1
+• Retén de salida de caja de BAIC Senova
+• Actuador de embrague de GWM Jolion
+🔩 Sistema de frenos y chasis
+• Amortiguadores delanteros de Volkswagen Suran
+• Pastillas de freno delanteras de Toyota Etios
+• Discos de freno ventilados de Fiat Palio
+• Cremallera de dirección hidráulica de Renault Clio Mío
+• Parrilla de suspensión de Peugeot 207
+• Cilindro maestro de freno (Bomba de freno) de Ford Fiesta
+• Campanas de freno traseras de Chevrolet Celta
+• Bujes de barra estabilizadora de Citroën C4 Lounge
+• Caliper de freno izquierdo de Nissan Tiida
+• Pastillas de freno traseras de Honda Fit
+• Extremo de dirección de Hyundai i10
+• Servo freno de Kia Picanto
+• Bomba de dirección asistida de Chery Face
+• Eje trasero de suspensión de Haval H9
+• Discos de freno traseros de Audi Q3
+• Espirales de suspensión de BMW X1
+• Amortiguadores traseros de Mercedes-Benz GLA
+• Rótula de suspensión de Jeep Patriot
+• Bieletas de suspensión de BAIC BJ20
+• Maza de rueda delantera de GWM Tank
+⚡ Sistema eléctrico y electrónico
+• Computadora de a bordo (ECU) de Volkswagen Bora
+• Alternador de Toyota Hilux SW4
+• Motor de arranque (Burro) de Fiat Uno Way
+• Bobinas de encendido de Renault Kangoo
+• Bujías de encendido de Peugeot 408
+• Ópticas delanteras full LED de Ford Mondeo
+• Batería de alta capacidad de Chevrolet Cruze
+• Faros traseros de Citroën C3 Aircross
+• Sensor de oxígeno (Sonda Lambda) de Nissan Sentra
+• Módulo ABS de Honda City
+• Sensores de estacionamiento de Hyundai Creta
+• Tablero de instrumentos digital de Kia Sportage
+• Módulo de confort (BCM) de Chery Tiggo 3
+• Sensor de posición de cigüeñal (CKP) de Haval H6
+• Faros antiniebla de BAIC X55
+• Compresor de aire acondicionado de GWM Poer
+• Distribuidor de encendido de Audi A5
+• Sensores de punto ciego de BMW 520i
+• Cámara de retroceso de Mercedes-Benz E300
+• Fusilera del habitáculo de Jeep Cherokee
+🚗 Carrocería y accesorios
+• Paragolpes delantero de Fiat Mobi
+• Capot de motor de Volkswagen Vento
+• Guardabarros delantero izquierdo de Renault Stepway
+• Puerta delantera derecha de Ford EcoSport
+• Espejo retrovisor eléctrico de Chevrolet Tracker
+• Portón de baúl de Toyota Corolla Cross
+• Parabrisas delantero de Peugeot 2008
+• Luneta térmica trasera de Citroën C3 Picasso
+• Parrilla frontal de radiador de Nissan Kicks
+• Escobillas limpiaparabrisas de Honda HR-V
+• Manija exterior de puerta de Hyundai Santa Fe
+• Máquina levanta cristales de Kia Sorento
+• Techo solar corredizo de Audi A1
+• Amortiguadores de portón de BMW X3
+• Molduras laterales de puerta de Mercedes-Benz GLC
+• Zócalo lateral de carrocería de Jeep Wrangler
+• Guardabarros trasero de Chery Skin
+• Paragolpes trasero de Haval Jolion
+• Óptica de giro en espejo de BAIC X65
+• Insonorizador de capot de GWM Haval
+
