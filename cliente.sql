@@ -148,7 +148,7 @@ DELIMITER ;
 INSERT INTO registro (ID_usuario, ip_direccion, dispositivo, estado_conexion) VALUES
 (1, '192.168.1.50', 'Chrome OS / PC Oficina Central', 'Exitoso'),
 (2, '181.44.212.10', 'Firefox / Windows 11 - Logística', 'Exitoso'),
-(3, '190.2.115.88', 'Safari / iPhone 15 Pro Max', 'Fallido'); -- Ejemplo de intento de hackeo o contraseña errónea
+(3, '190.2.115.88', 'Safari / iPhone 15 Pro Max', 'Fallido'); 
 
 
 CREATE TABLE Horario (
