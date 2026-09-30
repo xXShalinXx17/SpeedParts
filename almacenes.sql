@@ -54,18 +54,6 @@ CREATE TABLE stock_de_repuestos (
 );
 
 DELIMITER //
-CREATE TRIGGER bloquear_stock_negativo
-BEFORE UPDATE ON stock_de_repuestos
-FOR EACH ROW
-BEGIN
-    IF NEW.stock_actual < 0 THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Error de Inventario: La operacion causaria un stock negativo. Accion cancelada.';
-    END IF;
-END //
-DELIMITER ;
-
-DELIMITER //
 CREATE TRIGGER controlar_capacidad_maxima_almacen
 BEFORE INSERT ON stock_de_repuestos
 FOR EACH ROW
@@ -73,19 +61,28 @@ BEGIN
     DECLARE v_capacidad_max INT;
     DECLARE v_stock_total_actual BIGINT;
 
-    SELECT capacidad_MAX INTO v_capacidad_max 
-    FROM almacen 
-    WHERE ID_almacen = NEW.ID_almacen;
-
-    SELECT IFNULL(SUM(stock_actual), 0) INTO v_stock_total_actual 
-    FROM stock_de_repuestos 
-    WHERE ID_almacen = NEW.ID_almacen;
+    SELECT capacidad_MAX INTO v_capacidad_max FROM almacen WHERE ID_almacen = NEW.ID_almacen;
+    SELECT IFNULL(SUM(stock_actual), 0) INTO v_stock_total_actual FROM stock_de_repuestos WHERE ID_almacen = NEW.ID_almacen;
 
     IF (v_stock_total_actual + NEW.stock_actual) > v_capacidad_max THEN
-        SIGNAL SQLSTATE '45000'
+        SIGNAL SQLSTATE '45000' 
         SET MESSAGE_TEXT = 'Error Logistico: No se puede añadir stock. Supera la capacidad maxima configurada para este almacen.';
     END IF;
 END //
+DELIMITER ;
+
+DELIMITER //
+
+CREATE TRIGGER bloquear_stock_negativo
+BEFORE UPDATE ON stock_de_repuestos
+FOR EACH ROW
+BEGIN
+    IF NEW.stock_actual < 0 THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Error de Inventario: La operacion causaria un stock negativo. Accion cancelada.';
+    END IF;
+END //
+
 DELIMITER ;
 
 INSERT INTO stock_de_repuestos (ID_almacen, id_repuestos, stock_actual, stock_minimo) VALUES
