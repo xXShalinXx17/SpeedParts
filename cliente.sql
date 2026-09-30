@@ -18,12 +18,26 @@ CREATE TABLE Sub_Rol_Empleado (
 );
 
 INSERT INTO Sub_Rol_Empleado (ID_sub_rol, Nombre_puesto) VALUES 
-(1, 'Recursos Humanos'),
-(2, 'Limpieza y Maestranza'),
-(3, 'Ventas / Mostrador'),
-(4, 'Administración y Finanzas'),
-(5, 'Logística y Almacén');
-
+(1, 'Dirección Industrial'),
+(2, 'Ingeniería de Producto'),
+(3, 'Matricería y Troquelado'),
+(4, 'Línea de Ensamble'),
+(5, 'Inyección de Plásticos'),
+(6, 'Control de Calidad (Metrología)'),
+(7, 'Mantenimiento Predictivo'),
+(8, 'Logística y Suministros (JIT)'),
+(9, 'Almacén de Productos Terminados'),
+(10, 'Recursos Humanos'),
+(11, 'Finanzas y Costos Industriales'),
+(12, 'Seguridad e Higiene'),
+(13, 'Sistemas y Automatización (PLC)'),
+(14, 'Compras Técnicas'),
+(15, 'Ventas a Terminales'),
+(16, 'I+D y Prototipado 3D'),
+(17, 'Gestión Ambiental'),
+(18, 'Auditoría de Procesos'),
+(19, 'Atención al Cliente (Terminales)'),
+(20, 'Legales');
 
 CREATE TABLE Usuario (
 ID_usuario bigint not null auto_increment primary key,
@@ -94,6 +108,11 @@ BEGIN
 END //
 DELIMITER ;
 
+INSERT INTO Detalle_Empleado (ID_detalle, ID_usuario, ID_sub_rol) VALUES
+(1, 1, 4),
+(2, 2, 5),
+(3, 3, 2);
+
 CREATE TABLE registro (
     ID_registro BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     ID_usuario BIGINT NOT NULL,
@@ -143,23 +162,46 @@ CREATE TABLE Horario (
 );
 
 DELIMITER //
+
 CREATE TRIGGER validar_coherencia_horas
 BEFORE INSERT ON Horario
 FOR EACH ROW
 BEGIN
+    DECLARE v_id_sub_rol INT;
+    DECLARE v_cantidad_vacaciones_coincidentes INT;
+
     IF NEW.horario_de_salida <= NEW.horario_de_entrada THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: La salida no puede ser menor o igual a la entrada.';
     END IF;
+    
     IF NEW.fecha_de_vacaciones < CURDATE() THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: La fecha de vacaciones no puede ser del pasado.';
     END IF;
+
+    SELECT ID_sub_rol INTO v_id_sub_rol 
+    FROM Detalle_Empleado 
+    WHERE ID_detalle = NEW.ID_detalle;
+
+    SELECT COUNT(*) INTO v_cantidad_vacaciones_coincidentes
+    FROM Horario H
+    INNER JOIN Detalle_Empleado D ON H.ID_detalle = D.ID_detalle
+    WHERE D.ID_sub_rol = v_id_sub_rol 
+      AND H.fecha_de_vacaciones = NEW.fecha_de_vacaciones;
+
+    IF v_cantidad_vacaciones_coincidentes >= 4 THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Error RRHH: Cupo maximo alcanzado. Ya hay 4 empleados de este mismo departamento asignados a esa fecha de vacaciones.';
+    END IF;
+
 END //
 
 DELIMITER ;
 
+
 INSERT INTO Horario (ID_detalle, Turno, horario_de_entrada, horario_de_salida, fecha_de_vacaciones) VALUES
-(1, 'Turno Completo Ejecutivo', '08:00:00', '17:00:00', '2027-01-15'),
-(2, 'Turno Mañana Logística', '06:00:00', '14:00:00', '2027-02-10');
+(1, 'Turno Completo', '08:00:00', '17:00:00', '2027-01-15'),
+(2, 'Turno Mañana', '06:00:00', '14:00:00', '2027-02-10'),
+(3, 'Turno tarde', '13:00:00', '18:00:00', '2027-01-20');
 
 CREATE TABLE recibo (
     ID_recibo BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
