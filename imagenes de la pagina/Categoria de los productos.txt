@@ -127,3 +127,126 @@ Barcos
 • Óptica de giro en espejo de BAIC X65
 • Insonorizador de capot de GWM Haval
 
+
+MOTOS
+ El Motor
+• Cilindro y pistón de Honda Wave 110S
+• Carburador de Motomel Skua 150
+• Árbol de levas de Gilera Smash 110
+• Válvulas de admisión y escape de Corven Triax 150
+• Junta de tapa de cilindros de Zanella Ceccato 150
+• Cuerpo de inyección electrónica de Bajaj Rouser NS 200
+• Bomba de aceite de Yamaha YBR 125
+• Bujía de encendido de Keller Crono Classic 110
+• Tapa de embrague de Mondial LD 110
+• Filtro de aceite de Guerrero Trip 110
+• Radiador de agua de Benelli TNT 300
+• Cigüeñal y biela de Suzuki AX 100
+• Botadores de válvulas de Royal Enfield Interceptor 650
+• Tensor de cadena de distribución de Kawasaki Ninja 400
+• Filtro de aire de alto flujo de BMW G 310 GS
+⚙️ La Transmisión
+• Kit de transmisión (cadena, corona y piñón) de Honda Tornado XR 250
+• Discos de embrague de Bajaj Dominar 400
+• Variador continuo y correa de Zanella Exclusive 150 (Scooter)
+• Caja de cambios secuencial de Yamaha FZ FI
+• Rulemán de empuje de Motomel Blitz 110
+• Pedal de cambios de Gilera Sahel 150
+• Eje de piñón de Corven Hunter 150
+• Embrague centrífugo de Keller Stratus 150
+• Campana de embrague de Mondial MD 150
+• Corona de tracción de Guerrero G 110 Trip
+• Cadena de transmisión dorada de Benelli TRK 502
+• Selector de marchas de Suzuki Gixxer 150
+• Cardán de transmisión trasera de BMW R 1250 GS
+• Embrague antirrebote de Kawasaki Z400
+• Maza de rueda trasera porta-corona de Royal Enfield Himalayan
+🔩 El Chasis y Parte Ciclo
+• Barrales de suspensión delantera de Honda Twister CB 250
+• Monoshock trasero de Yamaha MT-03
+• Chasis estructural de acero de Bajaj Rouser 135
+• Discos de freno lobulados de Benelli Leoncino 500
+• Caliper de freno delantero de Suzuki EN 125
+• Llantas de rayos reforzados de Royal Enfield Classic 350
+• Horquilla trasera (Basculante) de Kawasaki Versys 300
+• Llantas de aleación de BMW F 750 GS
+• Cojinetes de dirección de Motomel Sirius 150
+• Amortiguadores traseros cromados de Gilera VC 150
+• Pastillas de freno delanteras de Corven Energy 110
+• Bomba de freno delantero de Zanella Sapucai 150
+• Manubrio de competición de Keller Miracle 150
+• Zapatas de freno trasero (Cintas) de Mondial Max 110
+• Pedal de freno trasero de Guerrero Flash 110
+⚡ La Carrocería y Sistema Eléctrico
+• Óptica delantera LED de Honda GLH 150 Gaucha
+• Tablero digital TFT de Bajaj Chetak
+• Cachas plásticas laterales de Motomel Skua 250
+• Guardabarros delantero de Gilera Smash Full
+• Tanque de combustible de Corven Mirage 110
+• Estatór de encendido de Zanella RX 150
+• Regulador de voltaje de Yamaha XTZ 125
+• Motor de arranque (Burro) de Keller K200
+• Faro trasero de stop de Mondial HD 250
+• Giros de luz de giro de Guerrero Queen 125
+• Bobina de encendido de Benelli 180S
+• Batería de gel de Suzuki GN 125
+• Instalación eléctrica principal (Ramal) de Royal Enfield Meteor 350
+• Computadora de gestión de motor (ECU) de Kawasaki Z900
+• Tablero analógico de instrumentos de BMW R NineT
+
+
+Lanchas y Barcos
+Orientación y Situación
+• Compás magnético de lectura frontal de Lancha Regnicoli Open
+• Ecosonda con transductor y GPS plotter de Lancha Bermuda Safari
+• Radio VHF marina con antena de Lancha Canestrari 168
+• Timón de acero inoxidable de Crucero Arco Iris Eclipse
+• Luz de navegación todo horizonte (Fondeo) de Trakker 520
+• Luces de posición de babor y estribor de Crucero Paglietini Gacela
+• Pantalla multifunción de navegación de Yate Klase A 60
+• Rueda de gobierno forrada en cuero de Lancha Campanili CS 190
+• Ancla tipo Danforth con cadena de Lancha Geuna Cuddy
+• Reloj indicador de rumbo digital de Lancha Quicksilver 1600
+• Reflector de proa a control remoto de Crucero Bayliner
+• Estación meteorológica marina de Yate Sea Ray
+• Piloto automático asistido de Velero Beneteau Oceanis
+• Antena de radar de alta definición de Barco Jeanneau NC
+• Sistema de posicionamiento dinámico por satélite de Yate Azimut 60
+• Sonda de pesca de doble frecuencia de Yate Ferretti
+• Compás satelital de Yate Princess Y72
+⚓ El Casco y la Estructura
+• Quilla reforzada de fibra de vidrio de Lancha Bermuda Classic
+• Espejo estructural para fuera de borda de Trakker 460
+• Bomba de achique eléctrica de Lancha Canestrari 195
+• Línea de eje de transmisión de bronce de Crucero Paglietini
+• Cuadernas longitudinales de refuerzo de Lancha Regnicoli Dorado
+• Pata de transmisión de motor dentro-fuera de borda de Motor Volvo Penta
+• Hélice de aluminio de tres palas de Motor fuera de borda Mercury 40HP
+• Botazo perimetral de goma de Lancha Arco Iris 180
+• Mamparos estancos de división interna de Yate Klase A
+• Flaps estabilizadores hidráulicos de Lancha Quicksilver
+• Grifo de fondo de bronce de Velero Beneteau
+• Puntales de soporte de cubierta de Barco Jeanneau
+• Ánodo de sacrificio de zinc de Motor fuera de borda Yamaha 90HP
+• Filtro de agua de mar para refrigeración de Motor interno Yanmar
+• Carcasa exterior protectora de Motor fuera de borda Suzuki 115HP
+• Soporte de motor (Pata de gallo) de Motor interno Cummins
+• Toma de agua de refrigeración del casco de Motor interno Caterpillar
+🛋️ Partes Superiores e Internas
+• Bimini (toldo protector del sol) de Lancha Arco Iris Eclipse
+• Butacas giratorias tapizadas en cuerina marina de Lancha Campanili
+• Malacate de proa eléctrico para el ancla de Lancha Geuna
+• Parabrisas curvo de aluminio y vidrio de Lancha Regnicoli
+• Camarote principal alfombrado de Crucero Klase A
+• Baño compartimentado con inodoro marino de Yate Azimut
+• Cocina integrada con anafe y bacha de Yate Princess
+• Planchada de popa en madera teca de Yate Ferretti
+• Piso matrizado antideslizante de cubierta de Lancha Bermuda
+• Escalera de popa rebatible de acero inoxidable de Lancha Canestrari
+• Tapicería del solárium de proa de Yate Sea Ray
+• Cerramiento de lona transparente completo de Crucero Bayliner
+• Escotilla de ventilación de cubierta de Velero Beneteau
+• Salón principal con sillones integrados de Barco Jeanneau
+• Tanque de combustible de acero inoxidable de Trakker 630
+• Bomba de presión de agua potable interna de Motor fuera de borda Honda 250HP
+• Comando de acelerador y marcha a distancia de Motor fuera de borda Tohatsu
