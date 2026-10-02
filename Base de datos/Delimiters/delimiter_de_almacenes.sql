@@ -274,3 +274,82 @@ BEGIN
     END IF;
 END //
 DELIMITER ;
+
+-- SP 15 --
+DELIMITER //
+CREATE PROCEDURE ProcesarVentaComboIndustrial(
+    IN p_ID_usuario BIGINT,
+    IN p_id_promocion BIGINT,
+    IN p_id_almacen BIGINT,
+    IN p_cantidad_combos_comprados INT
+)
+BEGIN
+    DECLARE v_id_repuesto_actual BIGINT;
+    DECLARE v_cantidad_por_combo INT;
+    DECLARE v_stock_disponible BIGINT;
+    DECLARE v_precio_combo BIGINT;
+    DECLARE v_nombre_combo TEXT;
+    DECLARE fin_bucle INT DEFAULT 0;
+
+    DECLARE cursor_repuestos CURSOR FOR 
+        SELECT id_repuestos, cantidad_incluida 
+        FROM detalle_combo_promocion 
+        WHERE id_promocion = p_id_promocion;
+        
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET fin_bucle = 1;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error Critico: Fallo de stock o logistica. Venta de combo cancelada y revertida.';
+    END;
+
+    SELECT nombre_promocion, precio_fijo_combo INTO v_nombre_combo, v_precio_combo
+    FROM Promocion 
+    WHERE id_promocion = p_id_promocion AND activo = 1 AND CURDATE() BETWEEN fecha_inicio AND fecha_fin;
+
+    IF v_precio_combo IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error Comercial: El combo seleccionado no existe, no esta activo o ya expiro su fecha de vigencia.';
+    END IF;
+
+
+    START TRANSACTION;
+
+    OPEN cursor_repuestos;
+
+    bucle_loop: LOOP
+        FETCH cursor_repuestos INTO v_id_repuesto_actual, v_cantidad_por_combo;
+        IF fin_bucle = 1 THEN
+            LEAVE bucle_loop;
+        END IF;
+
+        SELECT stock_actual INTO v_stock_disponible 
+        FROM stock_de_repuestos 
+        WHERE ID_almacen = p_id_almacen AND id_repuestos = v_id_repuesto_actual;
+
+        IF v_stock_disponible >= (v_cantidad_por_combo * p_cantidad_combos_comprados) THEN
+            UPDATE stock_de_repuestos 
+            SET stock_actual = stock_actual - (v_cantidad_por_combo * p_cantidad_combos_comprados)
+            WHERE ID_almacen = p_id_almacen AND id_repuestos = v_id_repuesto_actual;
+        ELSE
+            CLOSE cursor_repuestos;
+            ROLLBACK;
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error de Inventario: No hay stock suficiente de todos los componentes para armar este combo.';
+        END IF;
+    END LOOP;
+
+    CLOSE cursor_repuestos;
+
+    INSERT INTO CLIENTE.recibo (ID_usuario, id_repuestos, detalle_producto, fecha_entrega, cantidad, precio)
+    VALUES (
+        p_ID_usuario, 
+        p_id_promocion, 
+        CONCAT('[VENTA COMBO] ', v_nombre_combo), 
+        CURDATE(), 
+        p_cantidad_combos_comprados, 
+        v_precio_combo
+    );
+    COMMIT;
+
+END //
+DELIMITER ;
