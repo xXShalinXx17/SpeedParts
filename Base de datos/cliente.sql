@@ -203,6 +203,17 @@ INSERT INTO Horario (ID_detalle, Turno, horario_de_entrada, horario_de_salida, f
 (2, 'Turno Mañana', '06:00:00', '14:00:00', '2027-02-10'),
 (3, 'Turno tarde', '13:00:00', '18:00:00', '2027-01-20');
 
+CREATE TABLE Metodo_de_pago(
+ID_pago  BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+Tipo_de_pago TEXT
+);
+
+INSERT INTO Metodo_de_pago ( ID_pago, Tipo_de_pago) VALUES
+(1, "Efectivo "),
+(2, "Transferencia "),
+(3, "Tarjeta de Credito "),
+(4, "Tarjeta de Debito ");
+
 CREATE TABLE recibo (
     ID_recibo BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     ID_usuario BIGINT NOT NULL,
@@ -210,7 +221,9 @@ CREATE TABLE recibo (
     detalle_producto TEXT,        
     fecha_entrega DATE NOT NULL,
     cantidad INT NOT NULL,
-    precio BIGINT NOT NULL,       
+    precio BIGINT NOT NULL,
+    ID_pago BIGINT NOT NULL,
+    CONSTRAINT fk_Pago_usuario FOREIGN KEY (ID_pago) REFERENCES Metodo_de_pago(ID_pago),
     CONSTRAINT fk_recibo_usuario FOREIGN KEY (ID_usuario) REFERENCES Usuario(ID_usuario)
 );
 
@@ -231,6 +244,6 @@ BEGIN
 END //
 DELIMITER ;
 
-INSERT INTO recibo (ID_usuario, id_repuestos, detalle_producto, fecha_entrega, cantidad, precio) VALUES
-(3, 101, 'Pastillas de Freno Brembo - Venta Mostrador', '2026-08-20', 2, 45000),
-(3, 102, 'Filtro de Aceite Bosch - Repuesto Filtración', '2026-08-25', 1, 12000);
+INSERT INTO recibo (ID_usuario, id_repuestos, detalle_producto, fecha_entrega, cantidad, precio, ID_pago) VALUES
+(3, 101, 'Pastillas de Freno Brembo - Venta Mostrador', '2026-08-20', 2, 45000, 2),
+(3, 102, 'Filtro de Aceite Bosch - Repuesto Filtración', '2026-08-25', 1, 12000, 4);
