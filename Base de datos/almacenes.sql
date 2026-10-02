@@ -24,9 +24,9 @@ CREATE TABLE almacen (
     CONSTRAINT fk_almacen_categoria FOREIGN KEY (Categoria_id) REFERENCES Categoria(Categoria_id)
 );
 
-INSERT INTO almacen (Categoria_id, nombre, capacidad_MAX, dirección) VALUES
-(1, 'Almacen Central Norte', 5000, 'Ruta 9 Km 40, Benavidez'),
-(4, 'Deposito Express CABA', 1500, 'Av. Warnes 1540, CABA');
+INSERT INTO almacen (ID_almacen, Categoria_id, nombre, capacidad_MAX, dirección) VALUES
+(1, 1, 'Almacen Central Norte', 5000, 'Ruta 9 Km 40, Benavidez'),
+(2, 4, 'Deposito Express CABA', 1500, 'Av. Warnes 1540, CABA');
 
 CREATE TABLE Repuestos (
     id_repuestos BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -42,6 +42,66 @@ INSERT INTO Repuestos (id_repuestos, codigo_sku, tipo, nombre, descripcion, Cate
 (101, 'BRM-CER-001', 'Pastilla', 'Pastillas de Freno Brembo', 'Pastillas ceramicas de alto rendimiento', 1),
 (102, 'BSH-OIL-992', 'Filtro', 'Filtro de Aceite Bosch', 'Filtro blindado de larga duracion', 1),
 (103, 'NGK-IRD-555', 'Bujia', 'Bujias NGK Iridium', 'Bujia de iridio eficiente', 4);
+
+CREATE TABLE Promocion (
+    id_promocion BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    nombre_promocion TEXT NOT NULL,    
+    tipo_promocion ENUM('Descuento_Individual', 'Combo_Productos') NOT NULL,
+    precio_fijo_combo BIGINT NULL,      
+    porcentaje_descuento INT NULL,       
+    fecha_inicio DATE NOT NULL,
+    fecha_fin DATE NOT NULL,
+    activo BOOLEAN DEFAULT TRUE
+);
+
+DELIMITER //
+CREATE TRIGGER validar_datos_promocion
+BEFORE INSERT ON Promocion
+FOR EACH ROW
+BEGIN
+    IF NEW.fecha_fin <= NEW.fecha_inicio THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error Comercial: La fecha de fin de la promocion no puede ser menor o igual a la de inicio.';
+    END IF;
+
+    IF NEW.tipo_promocion = 'Descuento_Individual' AND (NEW.porcentaje_descuento <= 0 OR NEW.porcentaje_descuento > 100) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error Comercial: El porcentaje de descuento debe estar entre 1% y 100%.';
+    END IF;
+
+    IF NEW.tipo_promocion = 'Combo_Productos' AND NEW.precio_fijo_combo <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error Comercial: El precio fijo del combo debe ser un monto mayor a cero.';
+    END IF;
+END //
+DELIMITER ;
+
+INSERT INTO Promocion (id_promocion, nombre_promocion, tipo_promocion, precio_fijo_combo, porcentaje_descuento, fecha_inicio, fecha_fin) 
+VALUES (1, 'Combo Afinacion Express', 'Combo_Productos', 40000, NULL, '2026-10-01', '2026-11-30'),
+       (2, 'Combo Afinacion Express', 'Descuento_Individual', 20000, NULL, '2026-10-01', '2026-11-30'),
+       (3, 'Combo Afinacion Express', 'Combo_Productos', 40000, NULL, '2026-10-01', '2026-11-30');
+
+
+CREATE TABLE detalle_combo_promocion (
+    id_promocion BIGINT NOT NULL,
+    id_repuestos BIGINT NOT NULL,
+    cantidad_incluida INT NOT NULL DEFAULT 1, -- Ej: Si el combo lleva 4 bujías, aquí va un 4
+    PRIMARY KEY (id_promocion, id_repuestos),
+    CONSTRAINT fk_combo_promocion FOREIGN KEY (id_promocion) REFERENCES Promocion(id_promocion) ON DELETE CASCADE,
+    CONSTRAINT fk_combo_repuesto FOREIGN KEY (id_repuestos) REFERENCES Repuestos(id_repuestos) ON DELETE CASCADE
+);
+
+DELIMITER //
+CREATE TRIGGER validar_detalle_combo
+BEFORE INSERT ON detalle_combo_promocion
+FOR EACH ROW
+BEGIN
+    IF NEW.cantidad_incluida <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error Logistico: La cantidad de repuestos incluidos en el combo debe ser mayor a cero.';
+    END IF;
+END //
+DELIMITER ;
+
+INSERT INTO detalle_combo_promocion (id_promocion, id_repuestos, cantidad_incluida) VALUES
+(1, 102, 1),
+(1, 103, 4);
 
 CREATE TABLE stock_de_repuestos (
     ID_almacen BIGINT NOT NULL,
