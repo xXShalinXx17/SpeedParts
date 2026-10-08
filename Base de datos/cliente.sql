@@ -151,20 +151,27 @@ INSERT INTO registro (ID_usuario, ip_direccion, dispositivo, estado_conexion) VA
 (3, '190.2.115.88', 'Safari / iPhone 15 Pro Max', 'Fallido'); 
 
 
-CREATE TABLE Horario (
+CREATE TABLE Horario_de_oficina(
     ID_horario INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     ID_detalle BIGINT NOT NULL UNIQUE,
     Turno TEXT NOT NULL,
     horario_de_entrada TIME NOT NULL,
     horario_de_salida TIME NOT NULL,
     fecha_de_vacaciones DATE NOT NULL,
+	lunes BOOLEAN DEFAULT TRUE,
+    martes BOOLEAN DEFAULT TRUE,
+    miercoles BOOLEAN DEFAULT TRUE,
+    jueves BOOLEAN DEFAULT TRUE,
+    viernes BOOLEAN DEFAULT TRUE,
+    sabado BOOLEAN DEFAULT FALSE,
+    domingo BOOLEAN DEFAULT FALSE,
     CONSTRAINT fk_horario_detalle FOREIGN KEY (ID_detalle) REFERENCES Detalle_Empleado(ID_detalle) ON DELETE CASCADE
 );
 
 DELIMITER //
 
 CREATE TRIGGER validar_coherencia_horas
-BEFORE INSERT ON Horario
+BEFORE INSERT ON Horario_de_oficina
 FOR EACH ROW
 BEGIN
     DECLARE v_id_sub_rol INT;
@@ -183,7 +190,7 @@ BEGIN
     WHERE ID_detalle = NEW.ID_detalle;
 
     SELECT COUNT(*) INTO v_cantidad_vacaciones_coincidentes
-    FROM Horario H
+    FROM Horario_de_oficina H
     INNER JOIN Detalle_Empleado D ON H.ID_detalle = D.ID_detalle
     WHERE D.ID_sub_rol = v_id_sub_rol 
       AND H.fecha_de_vacaciones = NEW.fecha_de_vacaciones;
@@ -197,11 +204,36 @@ END //
 
 DELIMITER ;
 
+INSERT INTO Horario_de_oficina (ID_detalle, Turno, horario_de_entrada, horario_de_salida, fecha_de_vacaciones, lunes, martes, miercoles, jueves, viernes) VALUES 
+(2, 'Turno Mañana Logística', '06:00:00', '14:00:00', '2027-02-10', TRUE, TRUE, TRUE, FALSE, FALSE);
 
-INSERT INTO Horario (ID_detalle, Turno, horario_de_entrada, horario_de_salida, fecha_de_vacaciones) VALUES
-(1, 'Turno Completo', '08:00:00', '17:00:00', '2027-01-15'),
-(2, 'Turno Mañana', '06:00:00', '14:00:00', '2027-02-10'),
-(3, 'Turno tarde', '13:00:00', '18:00:00', '2027-01-20');
+CREATE TABLE Home_Office (
+    ID_home_office BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    ID_detalle BIGINT NOT NULL, 
+    fecha_inicio_remoto DATE NOT NULL, 
+    cantidad_dias_remotos INT NOT NULL, 
+    fecha_retorno_oficina DATE NOT NULL, 
+    estado_actual ENUM('En_Oficina', 'En_Home_Office', 'Finalizado') DEFAULT 'En_Oficina',
+    CONSTRAINT fk_home_office_detalle FOREIGN KEY (ID_detalle) REFERENCES Detalle_Empleado(ID_detalle) ON DELETE CASCADE
+);
+
+DELIMITER //
+CREATE TRIGGER calcular_fecha_retorno
+BEFORE INSERT ON Home_Office
+FOR EACH ROW
+BEGIN
+    IF NEW.cantidad_dias_remotos <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error RRHH: La cantidad de dias de Home Office debe ser mayor a cero.';
+    END IF;
+
+    SET NEW.fecha_retorno_oficina = DATE_ADD(NEW.fecha_inicio_remoto, INTERVAL NEW.cantidad_dias_remotos DAY);
+    
+    SET NEW.estado_actual = 'En_Home_Office';
+END //
+DELIMITER ;
+
+INSERT INTO Home_Office (ID_detalle, fecha_inicio_remoto, cantidad_dias_remotos) 
+VALUES (2, CURDATE(), 4);
 
 CREATE TABLE Metodo_de_pago(
 ID_pago  BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -247,3 +279,5 @@ DELIMITER ;
 INSERT INTO recibo (ID_usuario, id_repuestos, detalle_producto, fecha_entrega, cantidad, precio, ID_pago) VALUES
 (3, 101, 'Pastillas de Freno Brembo - Venta Mostrador', '2026-08-20', 2, 45000, 2),
 (3, 102, 'Filtro de Aceite Bosch - Repuesto Filtración', '2026-08-25', 1, 12000, 4);
+
+SELECT * FROM Home_Office;
