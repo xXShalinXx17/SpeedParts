@@ -281,3 +281,77 @@ INSERT INTO recibo (ID_usuario, id_repuestos, detalle_producto, fecha_entrega, c
 (3, 102, 'Filtro de Aceite Bosch - Repuesto Filtración', '2026-08-25', 1, 12000, 4);
 
 SELECT * FROM Home_Office;
+
+ALTER TABLE Usuario 
+ADD COLUMN requiere_cambio_clave BOOLEAN DEFAULT FALSE;
+
+DELIMITER //
+CREATE PROCEDURE RegistrarUsuarioEspecial(
+    IN p_Nombre TEXT,
+    IN p_Apellido TEXT,
+    IN p_telefono BIGINT,
+    IN p_DNI INT,
+    IN p_Direccion TEXT,
+    IN p_Gmail TEXT,
+    IN p_contrasena_ingresada TEXT, 
+    IN p_ID_sub_rol INT,            
+    IN p_ip TEXT,
+    IN p_dispositivo TEXT
+)
+BEGIN
+    DECLARE v_id_rol INT DEFAULT 3;
+    DECLARE v_cambio_obligatorio BOOLEAN DEFAULT FALSE;
+    DECLARE v_nuevo_id BIGINT;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error Critico: No se pudo procesar el registro especial.';
+    END;
+
+    IF p_contrasena_ingresada = 'ADMIN_MASTER_2026' THEN
+        SET v_id_rol = 1; 
+        SET v_cambio_obligatorio = TRUE; 
+    ELSEIF p_contrasena_ingresada = 'EMPLEADO_NUEVO_2026' THEN
+        SET v_id_rol = 2;
+        SET v_cambio_obligatorio = TRUE;
+    END IF;
+
+    START TRANSACTION;
+
+    INSERT INTO Usuario (ID_rol, Nombre, Apellido, telefono, DNI, Dirección, Gmail, contraseña, requiere_cambio_clave)
+    VALUES (v_id_rol, p_Nombre, p_Apellido, p_telefono, p_DNI, p_Direccion, p_Gmail, p_contrasena_ingresada, v_cambio_obligatorio);
+
+    SET v_nuevo_id = LAST_INSERT_ID();
+
+    IF v_id_rol IN (1, 2) THEN
+        INSERT INTO Detalle_Empleado (ID_usuario, ID_sub_rol)
+        VALUES (v_nuevo_id, p_ID_sub_rol);
+    END IF;
+
+    INSERT INTO registro (ID_usuario, ip_direccion, dispositivo, estado_conexion)
+    VALUES (v_nuevo_id, p_ip, p_dispositivo, 'Registro Especial');
+
+    COMMIT;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE EstablecerContrasenaDefinitiva(
+    IN p_ID_usuario BIGINT,
+    IN p_Nueva_Contrasena TEXT
+)
+BEGIN
+    IF EXISTS (SELECT 1 FROM Usuario WHERE ID_usuario = p_ID_usuario) THEN
+        
+        UPDATE Usuario 
+        SET contraseña = p_Nueva_Contrasena,
+            requiere_cambio_clave = FALSE
+        WHERE ID_usuario = p_ID_usuario;
+        
+    ELSE
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El usuario especificado no existe.';
+    END IF;
+END //
+DELIMITER ;
+
