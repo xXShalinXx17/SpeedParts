@@ -39,6 +39,11 @@ INSERT INTO Sub_Rol_Empleado (ID_sub_rol, Nombre_puesto) VALUES
 (19, 'Atención al Cliente (Terminales)'),
 (20, 'Legales');
 
+CREATE TABLE Codigos_postales(
+ID_codigo int not null auto_increment,
+Codigo_postal int not null primary key
+);
+
 CREATE TABLE Usuario (
 ID_usuario bigint not null auto_increment primary key,
 ID_rol int not null,
@@ -70,9 +75,9 @@ END //
 DELIMITER ;
 
 INSERT INTO Usuario (ID_usuario, ID_rol, Nombre, Apellido, telefono, DNI, Dirección, Gmail, contraseña) VALUES
-(1, 1, 'Carlos', 'Gómez', 1145678901, 30123456, 'Av. Santa Fe 1234, CABA', 'carlos.gomez@gmail.com', '$2b$10$hashAdminSecret123'),
-(2, 2, 'Ana', 'Martínez', 1156789012, 35789123, 'Calle Florida 550, CABA', 'ana.martinez@gmail.com', '$2b$10$hashEmpleadoWork456'),
-(3, 2, 'Julian', 'Rodriguez',1195315775, 49172856, 'Av. Cordoba 2134, CABA', 'julian.rodriguez@gmail.com', '$2b$10$hashClientePass789');
+(1, 1, 'Carlos', 'Gómez', 1145678901, 30123456, 'Av. Santa Fe 1234, CABA', 'carlos.gomez@gmail.com', 'helloperras9328'),
+(2, 2, 'Ana', 'Martínez', 1156789012, 35789123, 'Calle Florida 550, CABA', 'ana.martinez@gmail.com', 'anana64'),
+(3, 2, 'Julian', 'Rodriguez',1195315775, 49172856, 'Av. Cordoba 2134, CABA', 'julian.rodriguez@gmail.com', 'juli1990hfgd');
 
 DELIMITER //
 CREATE TRIGGER auditar_cambios_seguridad
@@ -285,73 +290,7 @@ SELECT * FROM Home_Office;
 ALTER TABLE Usuario 
 ADD COLUMN requiere_cambio_clave BOOLEAN DEFAULT FALSE;
 
-DELIMITER //
-CREATE PROCEDURE RegistrarUsuarioEspecial(
-    IN p_Nombre TEXT,
-    IN p_Apellido TEXT,
-    IN p_telefono BIGINT,
-    IN p_DNI INT,
-    IN p_Direccion TEXT,
-    IN p_Gmail TEXT,
-    IN p_contrasena_ingresada TEXT, 
-    IN p_ID_sub_rol INT,            
-    IN p_ip TEXT,
-    IN p_dispositivo TEXT
-)
-BEGIN
-    DECLARE v_id_rol INT DEFAULT 3;
-    DECLARE v_cambio_obligatorio BOOLEAN DEFAULT FALSE;
-    DECLARE v_nuevo_id BIGINT;
+USE CLIENTE;
 
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
-    BEGIN
-        ROLLBACK;
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error Critico: No se pudo procesar el registro especial.';
-    END;
-
-    IF p_contrasena_ingresada = 'ADMIN_MASTER_2026' THEN
-        SET v_id_rol = 1; 
-        SET v_cambio_obligatorio = TRUE; 
-    ELSEIF p_contrasena_ingresada = 'EMPLEADO_NUEVO_2026' THEN
-        SET v_id_rol = 2;
-        SET v_cambio_obligatorio = TRUE;
-    END IF;
-
-    START TRANSACTION;
-
-    INSERT INTO Usuario (ID_rol, Nombre, Apellido, telefono, DNI, Dirección, Gmail, contraseña, requiere_cambio_clave)
-    VALUES (v_id_rol, p_Nombre, p_Apellido, p_telefono, p_DNI, p_Direccion, p_Gmail, p_contrasena_ingresada, v_cambio_obligatorio);
-
-    SET v_nuevo_id = LAST_INSERT_ID();
-
-    IF v_id_rol IN (1, 2) THEN
-        INSERT INTO Detalle_Empleado (ID_usuario, ID_sub_rol)
-        VALUES (v_nuevo_id, p_ID_sub_rol);
-    END IF;
-
-    INSERT INTO registro (ID_usuario, ip_direccion, dispositivo, estado_conexion)
-    VALUES (v_nuevo_id, p_ip, p_dispositivo, 'Registro Especial');
-
-    COMMIT;
-END //
-DELIMITER ;
-
-DELIMITER //
-CREATE PROCEDURE EstablecerContrasenaDefinitiva(
-    IN p_ID_usuario BIGINT,
-    IN p_Nueva_Contrasena TEXT
-)
-BEGIN
-    IF EXISTS (SELECT 1 FROM Usuario WHERE ID_usuario = p_ID_usuario) THEN
-        
-        UPDATE Usuario 
-        SET contraseña = p_Nueva_Contrasena,
-            requiere_cambio_clave = FALSE
-        WHERE ID_usuario = p_ID_usuario;
-        
-    ELSE
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El usuario especificado no existe.';
-    END IF;
-END //
-DELIMITER ;
-
+ALTER TABLE registro 
+MODIFY COLUMN estado_conexion TEXT;
