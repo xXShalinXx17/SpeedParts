@@ -290,7 +290,5 @@ SELECT * FROM Home_Office;
 ALTER TABLE Usuario 
 ADD COLUMN requiere_cambio_clave BOOLEAN DEFAULT FALSE;
 
-USE CLIENTE;
-
 ALTER TABLE registro 
 MODIFY COLUMN estado_conexion TEXT;
