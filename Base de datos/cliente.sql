@@ -1,6 +1,6 @@
-drop database if exists CLIENTE;
-create database CLIENTE;
-use CLIENTE;
+DROP DATABASE IF EXISTS CLIENTE;
+CREATE DATABASE CLIENTE;
+USE CLIENTE;
 
 Create table Rol(
 ID_rol int not null auto_increment primary key,
@@ -41,8 +41,27 @@ INSERT INTO Sub_Rol_Empleado (ID_sub_rol, Nombre_puesto) VALUES
 
 CREATE TABLE Codigos_postales(
 ID_codigo int not null auto_increment,
+Nombre text not null,
 Codigo_postal int not null primary key
 );
+
+INSERT INTO Codigos_postales(ID_codigo, Nombre, Codigo_postal) VALUES
+(1,'CABA', 1000),
+(2,'CABA/COMUNA 1', 1427),
+(3,'CABA/COMUNA 2', 1425),
+(4,'CABA/COMUNA 3', 1259),
+(5,'CABA/COMUNA 4', 1437),
+(6,'CABA/COMUNA 5', 1257),
+(7,'CABA/COMUNA 6', 1424),
+(8,'CABA/COMUNA 7', 1238),
+(9,'CABA/COMUNA 8', 1439),
+(10,'CABA/COMUNA 9', 1440),
+(11,'CABA/COMUNA 10', 1086),
+(12,'CABA/COMUNA 11', 1429),
+(13,'CABA/COMUNA 12', 1431),
+(14,'CABA/COMUNA 13', 1430),
+(15,'CABA/COMUNA 14', 1004),
+(16, 'CABA/COMUNA 15',1069);
 
 CREATE TABLE Usuario (
 ID_usuario bigint not null auto_increment primary key,
