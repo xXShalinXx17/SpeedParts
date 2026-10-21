@@ -40,7 +40,7 @@ INSERT INTO Sub_Rol_Empleado (ID_sub_rol, Nombre_puesto) VALUES
 (20, 'Legales');
 
 CREATE TABLE Codigos_postales(
-ID_codigo int not null auto_increment,
+ID_codigo int not null,
 Nombre text not null,
 Codigo_postal int not null primary key
 );
@@ -70,10 +70,12 @@ Nombre text not null,
 Apellido text not null,
 telefono int(20) not null,
 DNI int(8) not null,
+Codigo_postal int not null,
 Dirección text not null,
 Gmail text not null,
 contraseña text not null,
-CONSTRAINT fk_usuario_rol FOREIGN KEY (ID_rol) REFERENCES Rol(ID_rol)
+CONSTRAINT fk_usuario_rol FOREIGN KEY (ID_rol) REFERENCES Rol(ID_rol),
+CONSTRAINT fk_usuario_Codigos_postales FOREIGN KEY (Codigo_postal) REFERENCES Codigos_postales(Codigo_postal)
 );
 
 DELIMITER //
@@ -93,10 +95,10 @@ BEGIN
 END //
 DELIMITER ;
 
-INSERT INTO Usuario (ID_usuario, ID_rol, Nombre, Apellido, telefono, DNI, Dirección, Gmail, contraseña) VALUES
-(1, 1, 'Carlos', 'Gómez', 1145678901, 30123456, 'Av. Santa Fe 1234, CABA', 'carlos.gomez@gmail.com', 'helloperras9328'),
-(2, 2, 'Ana', 'Martínez', 1156789012, 35789123, 'Calle Florida 550, CABA', 'ana.martinez@gmail.com', 'anana64'),
-(3, 2, 'Julian', 'Rodriguez',1195315775, 49172856, 'Av. Cordoba 2134, CABA', 'julian.rodriguez@gmail.com', 'juli1990hfgd');
+INSERT INTO Usuario (ID_usuario, ID_rol, Nombre, Apellido, telefono, DNI, Dirección, Codigo_postal, Gmail, contraseña) VALUES
+(1, 1, 'Carlos', 'Gómez', 1145678901, 30123456, 'Av. Santa Fe 1234, CABA', 1430, 'carlos.gomez@gmail.com', 'helloperras9328'),
+(2, 2, 'Ana', 'Martínez', 1156789012, 35789123, 'Calle Florida 550, CABA', 1004, 'ana.martinez@gmail.com', 'anana64'),
+(3, 2, 'Julian', 'Rodriguez',1195315775, 49172856, 'Av. Cordoba 2134, CABA', 1069, 'julian.rodriguez@gmail.com', 'juli1990hfgd');
 
 DELIMITER //
 CREATE TRIGGER auditar_cambios_seguridad
