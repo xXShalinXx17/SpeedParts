@@ -226,3 +226,47 @@ BEGIN
     END IF;
 END //
 DELIMITER ;
+
+-- SP 12 --
+
+DELIMITER //
+
+CREATE PROCEDURE obtener_vacaciones_empleado(
+    IN p_id_usuario BIGINT,             
+    OUT p_antiguedad_anios INT,         
+    OUT p_semanas_vacaciones VARCHAR(50)  
+)
+BEGIN
+    DECLARE v_fecha_contratacion DATE;
+    DECLARE v_id_rol INT;
+
+    SELECT ID_rol INTO v_id_rol 
+    FROM Usuario 
+    WHERE ID_usuario = p_id_usuario;
+
+    IF v_id_rol IS NULL THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Error de Permisos: El usuario ingresado no existe en el sistema.';
+    ELSEIF v_id_rol = 3 THEN 
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Error de Acceso: No se pueden calcular vacaciones para usuarios con el rol de Cliente.';
+    END IF;
+
+    SELECT fecha_contratacion INTO v_fecha_contratacion
+    FROM Detalle_Empleado
+    WHERE ID_usuario = p_id_usuario;
+
+    SET p_antiguedad_anios = TIMESTAMPDIFF(YEAR, v_fecha_contratacion, CURDATE());
+
+    IF p_antiguedad_anios < 1 THEN
+        SET p_semanas_vacaciones = '1 semana de vacaciones';
+    ELSEIF p_antiguedad_anios >= 1 AND p_antiguedad_anios < 5 THEN
+        SET p_semanas_vacaciones = '2 semanas de vacaciones';
+    ELSEIF p_antiguedad_anios >= 5 AND p_antiguedad_anios < 10 THEN
+        SET p_semanas_vacaciones = '3 semanas de vacaciones';
+    ELSE
+        SET p_semanas_vacaciones = '4 semanas de vacaciones';
+    END IF;
+END //
+
+DELIMITER ;
