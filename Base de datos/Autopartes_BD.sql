@@ -262,7 +262,7 @@ END //
 DELIMITER ;
 
 INSERT INTO Horario_de_oficina (ID_detalle, Turno, horario_de_entrada, horario_de_salida, fecha_de_vacaciones, lunes, martes, miercoles, jueves, viernes) VALUES 
-(2, 'Turno Mañana Logística', '06:00:00', '14:00:00', '2027-02-10', TRUE, TRUE, TRUE, FALSE, FALSE);
+(2, 'Turno Mañana Logística', '06:00:00', '14:00:00', '2027-02-10', TRUE, TRUE, TRUE, TRUE, TRUE);
 
 CREATE TABLE Home_Office (
     ID_home_office BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -322,6 +322,18 @@ CREATE TABLE Repuestos (
     CONSTRAINT fk_repuestos_categoria FOREIGN KEY (Categoria_id) REFERENCES Categoria(Categoria_id)
 );
 
+DELIMITER //
+
+CREATE TRIGGER estandarizar_sku_mayusculas
+BEFORE INSERT ON Repuestos
+FOR EACH ROW
+BEGIN
+
+    SET NEW.codigo_sku = UPPER(NEW.codigo_sku);
+END //
+
+DELIMITER ;
+
 INSERT INTO Repuestos (id_repuestos, codigo_sku, tipo, nombre, descripcion, Categoria_id) VALUES
 (101, 'BRM-CER-001', 'Pastilla', 'Pastillas de Freno Brembo', 'Pastillas ceramicas de alto rendimiento', 1),
 (102, 'BSH-OIL-992', 'Filtro', 'Filtro de Aceite Bosch', 'Filtro blindado de larga duracion', 1),
@@ -343,7 +355,7 @@ INSERT INTO Marcas_Vehiculo (nombre) VALUES
 CREATE TABLE Modelos_Vehiculo (
     id_modelo INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     id_marca INT NOT NULL,
-    Categoria_id INT NOT NULL, -- Relación agregada
+    Categoria_id INT NOT NULL,
     nombre VARCHAR(100) NOT NULL,
     CONSTRAINT fk_modelo_marca FOREIGN KEY (id_marca) REFERENCES Marcas_Vehiculo(id_marca),
     CONSTRAINT fk_modelo_categoria FOREIGN KEY (Categoria_id) REFERENCES Categoria(Categoria_id)
@@ -584,8 +596,8 @@ VALUES(35, 1, 1),
 CREATE TABLE Pedidos (
     id_pedido BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     ID_usuario BIGINT NOT NULL,
+	ID_pago BIGINT NOT NULL,
     fecha_pedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    ID_pago BIGINT NOT NULL,
     monto_total DECIMAL(12,2) NOT NULL DEFAULT 0.00,
     Estado_Pago ENUM('Pendiente', 'Aprobado', 'Rechazado') DEFAULT 'Pendiente',
     CONSTRAINT fk_pedido_usuario FOREIGN KEY (ID_usuario) REFERENCES Usuario(ID_usuario),
