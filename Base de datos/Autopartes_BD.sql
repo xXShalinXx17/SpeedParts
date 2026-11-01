@@ -672,7 +672,6 @@ CREATE TRIGGER validar_confirmador_envio
 BEFORE UPDATE ON envios
 FOR EACH ROW
 BEGIN
-    -- Si pasa a estar en viaje o entregado, sí o sí tiene que haber un empleado responsable
     IF (NEW.Estado = 'En Camino' OR NEW.Estado = 'Entregado') AND NEW.confirmador IS NULL THEN
         SIGNAL SQLSTATE '45000' 
         SET MESSAGE_TEXT = 'Error Logistico: Debe asignar un empleado responsable (confirmador) para despachar o entregar el envio.';
