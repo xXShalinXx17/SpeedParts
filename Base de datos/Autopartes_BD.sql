@@ -619,7 +619,8 @@ DELIMITER ;
 
 
 INSERT INTO Pedidos (id_pedido, ID_usuario, ID_pago, monto_total, Estado_Pago) 
-VALUES (1001, 3, 2, 102000.00, 'Aprobado');
+VALUES (1001, 3, 2, 102000.00, 'Aprobado'),
+	   (1002, 2, 4, 34000.00, 'Aprobado');
 
 CREATE TABLE Detalle_Pedido (
     id_pedido BIGINT NOT NULL,
@@ -653,7 +654,8 @@ DELIMITER ;
 INSERT INTO Detalle_Pedido (id_pedido, id_repuestos, cantidad, precio_unitario) 
 VALUES 
 (1001, 101, 2, 45000.00),
-(1001, 102, 1, 12000.00);
+(1001, 102, 1, 12000.00),
+(1002, 103, 4, 8500.00);
 
 CREATE TABLE envios (
     Numero_de_envio BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -741,4 +743,11 @@ DELIMITER ;
 
 INSERT INTO detalle_combo_promocion (id_promocion, id_repuestos, cantidad_incluida) VALUES
 (1, 102, 1),
-(1, 103, 4);
+(1, 103, 4);  
+
+ALTER TABLE Repuestos 
+ADD COLUMN precio_base DECIMAL(12,2) NOT NULL DEFAULT 0.00;
+
+UPDATE Repuestos SET precio_base = 45000.00 WHERE id_repuestos = 101;
+UPDATE Repuestos SET precio_base = 12000.00 WHERE id_repuestos = 102;
+UPDATE Repuestos SET precio_base = 8500.00 WHERE id_repuestos = 103;
