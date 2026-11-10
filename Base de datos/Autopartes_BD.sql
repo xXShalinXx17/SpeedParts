@@ -662,6 +662,7 @@ CREATE TABLE envios (
     id_pedido BIGINT NOT NULL,         
     ID_almacen BIGINT NOT NULL,
     fecha_hora_entrega DATETIME,
+	Destino_final TEXT NOT NULL,
     Estado ENUM('Pendiente', 'En Camino', 'Entregado', 'Cancelado') DEFAULT 'Pendiente',
     confirmador BIGINT,                 
     CONSTRAINT fk_envios_pedido FOREIGN KEY (id_pedido) REFERENCES Pedidos(id_pedido) ON DELETE CASCADE,
