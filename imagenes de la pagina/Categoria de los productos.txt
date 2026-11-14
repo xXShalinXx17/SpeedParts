@@ -1,7 +1,7 @@
 el sistema de envio tiene que ser por codigo postal
 
 link.mercadopago.com.ar/speedparts ( LINK DE PAGO MERCADO PAGO)
-
+ALTER TABLE Repuestos ADD COLUMN imagen_url VARCHAR(255) NULL;
 
 
 autos 
